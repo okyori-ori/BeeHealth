@@ -1,9 +1,11 @@
 using System.Data;
 using System.Globalization;
+using System.IO;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Input;
+using System.Windows.Media;
 using Microsoft.Data.SqlClient;
 using Microsoft.Win32;
 
@@ -13,6 +15,7 @@ public partial class MainWindow : Window
 {
     private readonly Database database = new();
     private readonly BeeService service;
+    private readonly MediaPlayer welcomeMusic = new() { Volume = 0.15 };
     private Section? section;
     private bool ready;
 
@@ -23,7 +26,24 @@ public partial class MainWindow : Window
         service = new BeeService(database);
         InitializeComponent();
         Navigation.ItemsSource = Catalog.Sections.Select(item => item.Title).Append("Сводка").ToArray();
+        ContentRendered += StartWelcomeMusic;
+        welcomeMusic.MediaEnded += (_, _) =>
+        {
+            if (ready) return;
+            welcomeMusic.Position = TimeSpan.Zero;
+            welcomeMusic.Play();
+        };
+        Closed += (_, _) => welcomeMusic.Close();
+    }
 
+    private void StartWelcomeMusic(object? sender, EventArgs e)
+    {
+        ContentRendered -= StartWelcomeMusic;
+        if (ready) return;
+        string audioPath = Path.Combine(AppContext.BaseDirectory, "Assets", "kto-pchelok-uvazhaet.mp3");
+        if (!File.Exists(audioPath)) return;
+        welcomeMusic.Open(new Uri(audioPath, UriKind.Absolute));
+        welcomeMusic.Play();
     }
 
     private void AcceptBees(object sender, RoutedEventArgs e)
@@ -31,6 +51,7 @@ public partial class MainWindow : Window
         Welcome.Visibility = Visibility.Collapsed;
         Workspace.Visibility = Visibility.Visible;
         ready = true;
+        welcomeMusic.Close();
         Navigation.SelectedIndex = 0;
         Navigation.Focus();
     }

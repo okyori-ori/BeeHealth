@@ -7,6 +7,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
   <ItemGroup>
+    <None Update="Assets/kto-pchelok-uvazhaet.mp3" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest"/>
     <PackageReference Include="Microsoft.Data.SqlClient" Version="5.2.3"/>
   </ItemGroup>
 </Project>
