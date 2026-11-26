@@ -25,8 +25,59 @@ if (args is ["--setup"])
 
 var database = new Database();
 var service = new BeeService(database);
+foreach (Section section in Catalog.Sections)
+{
+    int total = database.Read($"SELECT COUNT(*) FROM {section.Table}").Rows[0].Field<int>(0);
+    if (database.List(section, "", null, null).Rows.Count != total)
+        throw new Exception($"Пустой поиск скрыл записи в разделе «{section.Title}».");
+}
+var apiaries = Catalog.Sections[0];
+string testName = $"CHECK-{Guid.NewGuid():N}";
+var apiaryValues = new Dictionary<string, object?> { ["Name"] = testName, ["Location"] = "Тестовая точка" };
+service.Save(apiaries, null, apiaryValues, []);
+int apiaryId = database.List(apiaries, testName, null, null).Rows.Cast<DataRow>().Single().Field<int>("Id");
+try
+{
+    apiaryValues["Location"] = "Проверено";
+    service.Save(apiaries, apiaryId, apiaryValues, []);
+    if (database.Get(apiaries, apiaryId).Field<string>("Location") != "Проверено")
+        throw new Exception("Изменение пасеки не сохранилось.");
+}
+finally { database.Delete(apiaries, apiaryId); }
+if (database.List(apiaries, testName, null, null).Rows.Count != 0)
+    throw new Exception("Проверочная пасека не удалена.");
+Console.WriteLine("BH-01/02 PASS · CRUD, поиск и загрузка всех шести разделов.");
 var inspections = Catalog.Sections[3];
 var treatments = Catalog.Sections[4];
+int apiaryCount = database.List(apiaries, "", null, null).Rows.Count;
+if (database.ActiveColonies().Rows.Count != apiaryCount)
+    throw new Exception("В сводке присутствуют не все пасеки.");
+foreach (bool done in new[] { true, false })
+{
+    int expected = database.Read("SELECT COUNT(*) FROM Treatments WHERE Done=@done", new() { ["done"] = done })
+        .Rows[0].Field<int>(0);
+    if (database.List(treatments, "", null, null, done).Rows.Count != expected)
+        throw new Exception("Сводка профилактики неверно фильтрует статус.");
+}
+var future = new DateTime(9999, 1, 1);
+if (database.List(inspections, "", future, DateTime.MaxValue.Date).AsEnumerable()
+    .Any(row => row.Field<DateTime>("Дата осмотра") < future))
+    throw new Exception("Сводка пропустила осмотр за пределами периода.");
+Console.WriteLine("BH-07 PASS · Сводка учитывает пасеки, статусы и период.");
+using (var connection = database.Open())
+using (var transaction = connection.BeginTransaction())
+using (var command = Database.Command(connection,
+    "DELETE FROM Apiaries WHERE Id = (SELECT TOP (1) ApiaryId FROM Hives ORDER BY Id);", [], transaction))
+{
+    try
+    {
+        command.ExecuteNonQuery();
+        throw new Exception("Ожидался запрет удаления связанной пасеки.");
+    }
+    catch (SqlException error) when (error.Number == 547) { }
+    finally { transaction.Rollback(); }
+}
+Console.WriteLine("BH-08 PASS · Удаление связанной пасеки отклонено.");
 int colonyId = database.Choices(Catalog.ColonyChoices).First().Id;
 int validType = database.Choices(Catalog.TypeChoices).First().Id;
 DateTime settled = database.Get(Catalog.Sections[2], colonyId).Field<DateTime>("SettledOn");

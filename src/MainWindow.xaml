@@ -11,7 +11,7 @@
    <Setter Property="CanUserDeleteRows" Value="False"/><Setter Property="SelectionMode" Value="Single"/>
    <Setter Property="HeadersVisibility" Value="Column"/><Setter Property="GridLinesVisibility" Value="Horizontal"/>
    <Setter Property="AlternatingRowBackground" Value="#F8F5ED"/><Setter Property="Background" Value="White"/>
-   <Setter Property="RowHeight" Value="32"/><Setter Property="ColumnWidth" Value="SizeToHeader"/>
+   <Setter Property="RowHeight" Value="32"/><Setter Property="ColumnWidth" Value="Auto"/>
   </Style>
  </Window.Resources>
  <Grid>

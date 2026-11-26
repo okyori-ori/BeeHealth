@@ -43,7 +43,7 @@ internal sealed class Database
 
     internal DataTable List(Section section, string search, DateTime? from, DateTime? to, bool? done = null)
     {
-        string sql = $"SELECT * FROM ({section.Query}) q WHERE CHARINDEX(@search, {section.Search}) > 0";
+        string sql = $"SELECT * FROM ({section.Query}) q WHERE (@search = N'' OR CHARINDEX(@search, {section.Search}) > 0)";
         var parameters = new Dictionary<string, object?> { ["search"] = search };
         if (Catalog.DateColumn(section) is string date)
         {
