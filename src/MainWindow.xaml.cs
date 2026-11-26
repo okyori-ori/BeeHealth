@@ -5,6 +5,7 @@ using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Input;
 using Microsoft.Data.SqlClient;
+using Microsoft.Win32;
 
 namespace BeeHealth;
 
@@ -22,7 +23,37 @@ public partial class MainWindow : Window
         service = new BeeService(database);
         InitializeComponent();
         Navigation.ItemsSource = Catalog.Sections.Select(item => item.Title).Append("Сводка").ToArray();
-        Loaded += (_, _) => { ready = true; Navigation.SelectedIndex = 0; };
+
+    }
+
+    private void AcceptBees(object sender, RoutedEventArgs e)
+    {
+        Welcome.Visibility = Visibility.Collapsed;
+        Workspace.Visibility = Visibility.Visible;
+        ready = true;
+        Navigation.SelectedIndex = 0;
+        Navigation.Focus();
+    }
+
+    private void DeclineBees(object sender, RoutedEventArgs e)
+    {
+        LocationText.Text = $"Регион Windows — {ReadWindowsRegion()}\nЧасовой пояс — {TimeZoneInfo.Local.DisplayName}";
+        LocationPanel.Visibility = Visibility.Visible;
+    }
+
+    private static string ReadWindowsRegion()
+    {
+        try
+        {
+            using var key = Registry.CurrentUser.OpenSubKey(@"Control Panel\International\Geo");
+            return key?.GetValue("Name") is string code
+                ? new RegionInfo(code).DisplayName
+                : "не указан";
+        }
+        catch (ArgumentException)
+        {
+            return "не указан";
+        }
     }
 
     private void Navigate(object sender, SelectionChangedEventArgs e)
@@ -113,7 +144,7 @@ public partial class MainWindow : Window
     {
         if (section is null) return;
         var row = id.HasValue ? database.Get(section, id.Value) : null;
-        var editor = new RecordWindow(section, database, service, row, id) { Owner = this };
+        var editor = new RecordWindow(section, database, service, row, id) { Owner = this, Resources = Resources, Background = Background };
         if (editor.ShowDialog() == true) LoadRecords("Изменения сохранены.");
     });
 
