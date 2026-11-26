@@ -1,4 +1,6 @@
+using System.ComponentModel;
 using System.Data;
+using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Windows;
@@ -63,6 +65,15 @@ public partial class MainWindow : Window
         LocationPanel.Visibility = Visibility.Visible;
         var flight = (Storyboard)Welcome.Resources["SwarmFlight"];
         flight.Begin(this);
+        string articlePath = Path.Combine(AppContext.BaseDirectory, "Assets", "respect-bees.html");
+        try
+        {
+            using var browser = Process.Start(new ProcessStartInfo(articlePath) { UseShellExecute = true });
+        }
+        catch (Win32Exception)
+        {
+            LocationText.Text += "\nПчёлы помогают растениям давать плоды, перенося пыльцу с цветка на цветок.";
+        }
     }
 
     private static string ReadWindowsRegion()
