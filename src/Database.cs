@@ -97,4 +97,3 @@ internal sealed class Database
         GROUP BY a.Id, a.Name ORDER BY a.Name
         """);
 }
-

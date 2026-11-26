@@ -38,6 +38,10 @@ public partial class MainWindow : Window
         SearchBox.Visibility = report ? Visibility.Collapsed : Visibility.Visible;
         Period.Visibility = report || Catalog.DateColumn(section!) != null ? Visibility.Visible : Visibility.Collapsed;
         EditButton.Content = section?.Table == "Colonies" ? "Карточка семьи" : "Изменить";
+        Records.ItemsSource = null;
+        Report.Items.Clear();
+        Records.Visibility = report ? Visibility.Collapsed : Visibility.Visible;
+        Report.Visibility = report ? Visibility.Visible : Visibility.Collapsed;
         ResetFilters();
         LoadRecords();
     }
@@ -48,33 +52,25 @@ public partial class MainWindow : Window
         if (from > to) throw new InvalidOperationException("Начало периода должно быть не позже окончания.");
         if (section is null)
         {
-            var report = new TabControl();
-            AddReport(report, "Активные семьи", database.ActiveColonies());
-            AddReport(report, "Осмотры", database.List(Catalog.Sections[3], "", from, to));
-            AddReport(report, "Выполнено", database.List(Catalog.Sections[4], "Выполнено", from, to, true));
-            AddReport(report, "Запланировано", database.List(Catalog.Sections[4], "Запланировано", from, to, false));
-            Records.ItemsSource = null;
-            if (Records.Parent is DockPanel host)
-            {
-                const string tag = "Report";
-                foreach (var previous in host.Children.OfType<TabControl>().Where(t => Equals(t.Tag, tag)).ToArray())
-                    host.Children.Remove(previous);
-                Records.Visibility = Visibility.Collapsed;
-                report.Tag = tag;
-                host.Children.Add(report);
-            }
+            var active = database.ActiveColonies();
+            var inspections = database.List(Catalog.Sections[3], "", from, to);
+            var done = database.List(Catalog.Sections[4], "", from, to, true);
+            var planned = database.List(Catalog.Sections[4], "", from, to, false);
+            Report.Items.Clear();
+            AddReport(Report, "Активные семьи", active);
+            AddReport(Report, "Осмотры", inspections);
+            AddReport(Report, "Выполнено", done);
+            AddReport(Report, "Запланировано", planned);
+            Report.SelectedIndex = 0;
             Status.Text = "Выберите вкладку сводки.";
             return;
         }
-        if (Records.Parent is DockPanel panel)
-            foreach (var report in panel.Children.OfType<TabControl>().ToArray()) panel.Children.Remove(report);
-        Records.Visibility = Visibility.Visible;
         var table = database.List(section, SearchBox.Text.Trim(), from, to);
         Records.ItemsSource = table.DefaultView;
         Status.Text = message ?? (table.Rows.Count == 0 ? "Записи не найдены." : $"Записей: {table.Rows.Count}");
     });
 
-    private static void AddReport(TabControl tabs, string title, DataTable data)
+    private void AddReport(TabControl tabs, string title, DataTable data)
     {
         var grid = new DataGrid();
         grid.AutoGeneratingColumn += FormatColumn;
@@ -84,7 +80,7 @@ public partial class MainWindow : Window
             { Text = "Записи не найдены.", Margin = new Thickness(16) } });
     }
 
-    private static void FormatColumn(object? sender, DataGridAutoGeneratingColumnEventArgs e)
+    private void FormatColumn(object? sender, DataGridAutoGeneratingColumnEventArgs e)
     {
         if (e.PropertyName == "Id") e.Column.Header = "№";
         if (e.PropertyType == typeof(DateTime) && e.Column is DataGridBoundColumn column && column.Binding is Binding binding)

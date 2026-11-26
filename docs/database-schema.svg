@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="860" height="620" viewBox="0 0 860 620">
+<rect width="860" height="620" fill="#fffbf0"/>
+<style>text{font-family:Segoe UI,Arial,sans-serif;fill:#253024;font-size:16px}.title{font-size:24px;font-weight:700}.name{fill:#fff;font-weight:700}.card{fill:#fff;stroke:#8b9884}.header{fill:#354633}.link{stroke:#596d51;stroke-width:2}.cardinality{font-size:14px;font-weight:700}</style>
+<text x="30" y="40" class="title">BeeHealth · ER-диаграмма</text>
+<line x1="270" y1="130" x2="310" y2="130" class="link"/>
+<line x1="550" y1="130" x2="590" y2="130" class="link"/>
+<line x1="710" y1="262" x2="710" y2="365" class="link"/>
+<line x1="270" y1="425" x2="310" y2="425" class="link"/>
+<line x1="590" y1="460" x2="550" y2="460" class="link"/>
+<line x1="635" y1="262" x2="500" y2="365" class="link"/>
+<g transform="translate(30,70)"><rect width="240" height="192" rx="6" class="card"/><rect width="240" height="36" rx="6" class="header"/><text x="14" y="24" class="name">Apiaries</text><text x="14" y="62">PK Id</text><text x="14" y="84">Name</text><text x="14" y="106">Location</text></g>
+<g transform="translate(310,70)"><rect width="240" height="192" rx="6" class="card"/><rect width="240" height="36" rx="6" class="header"/><text x="14" y="24" class="name">Hives</text><text x="14" y="62">PK Id</text><text x="14" y="84">FK ApiaryId</text><text x="14" y="106">Number</text></g>
+<g transform="translate(590,70)"><rect width="240" height="192" rx="6" class="card"/><rect width="240" height="36" rx="6" class="header"/><text x="14" y="24" class="name">Colonies</text><text x="14" y="62">PK Id</text><text x="14" y="84">FK HiveId</text><text x="14" y="106">Name</text><text x="14" y="128">SettledOn</text><text x="14" y="150">Active</text></g>
+<g transform="translate(30,365)"><rect width="240" height="208" rx="6" class="card"/><rect width="240" height="36" rx="6" class="header"/><text x="14" y="24" class="name">TreatmentTypes</text><text x="14" y="62">PK Id</text><text x="14" y="84">Name</text></g>
+<g transform="translate(310,365)"><rect width="240" height="208" rx="6" class="card"/><rect width="240" height="36" rx="6" class="header"/><text x="14" y="24" class="name">Treatments</text><text x="14" y="62">PK Id</text><text x="14" y="84">FK ColonyId</text><text x="14" y="106">FK TypeId</text><text x="14" y="128">FK InspectionId + ColonyId</text><text x="14" y="150">PlannedOn · Done · DoneOn</text><text x="14" y="172">Notes</text></g>
+<g transform="translate(590,365)"><rect width="240" height="208" rx="6" class="card"/><rect width="240" height="36" rx="6" class="header"/><text x="14" y="24" class="name">Inspections</text><text x="14" y="62">PK Id</text><text x="14" y="84">FK ColonyId</text><text x="14" y="106">InspectedOn</text><text x="14" y="128">Condition</text><text x="14" y="150">Notes</text><text x="14" y="172">UQ (Id, ColonyId)</text></g>
+<g class="cardinality"><text x="276" y="124">1</text><text x="295" y="124">N</text><text x="556" y="124">1</text><text x="575" y="124">N</text>
+<text x="720" y="281">1</text><text x="720" y="357">N</text><text x="276" y="419">1</text><text x="295" y="419">N</text>
+<text x="575" y="454">1</text><text x="554" y="454">N</text><text x="607" y="283">1</text><text x="506" y="358">N</text></g>
+<text x="30" y="600">У мероприятия осмотр необязателен. Составной FK связывает мероприятие с осмотром той же семьи.</text>
+</svg>
