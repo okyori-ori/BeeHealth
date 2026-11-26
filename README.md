@@ -55,4 +55,4 @@ $env:BEEHEALTH_CONNECTION = 'Server=.\SQLEXPRESS;Database=BeeHealth;Integrated S
 - [ER-диаграмма](docs/database-schema.svg)
 - [Сценарии и фактические результаты](docs/testing.md)
 
-Автор учебной работы: укажите ФИО и группу перед сдачей.
+Автор учебной работы — Щучкин Марк Юрьевич.
