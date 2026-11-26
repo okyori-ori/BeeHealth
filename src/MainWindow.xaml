@@ -119,7 +119,19 @@
    <Border Background="White" BorderBrush="#DACFBA" BorderThickness="1" CornerRadius="10" Padding="7"><Grid><DataGrid x:Name="Records" BorderThickness="0" AutoGeneratingColumn="FormatColumn" MouseDoubleClick="OpenRecord"/><TabControl x:Name="Report" Visibility="Collapsed"/></Grid></Border>
   </DockPanel>
  </Grid>
- <Grid x:Name="Welcome" Background="#21372B">
+ <Grid x:Name="Welcome" Background="#21372B" ClipToBounds="True">
+  <Grid.Resources>
+   <Storyboard x:Key="SwarmFlight">
+    <DoubleAnimationUsingKeyFrames Storyboard.TargetName="Swarm" Storyboard.TargetProperty="Opacity">
+     <LinearDoubleKeyFrame KeyTime="0:0:0" Value="0"/>
+     <LinearDoubleKeyFrame KeyTime="0:0:0.28" Value="1"/>
+     <LinearDoubleKeyFrame KeyTime="0:0:1.2" Value="1"/>
+     <LinearDoubleKeyFrame KeyTime="0:0:1.65" Value="0"/>
+    </DoubleAnimationUsingKeyFrames>
+    <DoubleAnimation Storyboard.TargetName="Swarm" Storyboard.TargetProperty="(UIElement.RenderTransform).(TranslateTransform.X)"
+                     From="-610" To="610" Duration="0:0:1.65"/>
+   </Storyboard>
+  </Grid.Resources>
   <Border HorizontalAlignment="Center" VerticalAlignment="Center" Width="510" Padding="38,30"
           CornerRadius="24" Background="#FFF9E9" BorderBrush="#DDB55E" BorderThickness="1">
    <StackPanel>
@@ -134,12 +146,24 @@
     <Border x:Name="LocationPanel" Visibility="Collapsed" Background="#F3E8CC" CornerRadius="10"
             Padding="16,12" Margin="0,18,0,0">
      <StackPanel>
+      <TextBlock Text="Улей объявил пчелиную тревогу!" FontSize="17" FontWeight="Bold" Foreground="#684509"/>
+      <TextBlock Text="Пчёлки дают второй шанс." Margin="0,4,0,10" Foreground="#374B3B"/>
       <TextBlock Text="Местоположение по настройкам Windows" FontWeight="SemiBold" Foreground="#21372B"/>
       <TextBlock x:Name="LocationText" TextWrapping="Wrap" Foreground="#374B3B" Margin="0,6,0,0"/>
      </StackPanel>
     </Border>
    </StackPanel>
   </Border>
+  <Canvas x:Name="Swarm" Width="510" Height="290" HorizontalAlignment="Center" VerticalAlignment="Center"
+          Opacity="0" IsHitTestVisible="False">
+   <Canvas.RenderTransform><TranslateTransform/></Canvas.RenderTransform>
+   <Image Source="{StaticResource Bee}" Width="63" Canvas.Left="2" Canvas.Top="92"/>
+   <Image Source="{StaticResource Bee}" Width="48" Canvas.Left="82" Canvas.Top="26"/>
+   <Image Source="{StaticResource Bee}" Width="78" Canvas.Left="151" Canvas.Top="163"/>
+   <Image Source="{StaticResource Bee}" Width="49" Canvas.Left="260" Canvas.Top="57"/>
+   <Image Source="{StaticResource Bee}" Width="70" Canvas.Left="350" Canvas.Top="127"/>
+   <Image Source="{StaticResource Bee}" Width="57" Canvas.Left="437" Canvas.Top="16"/>
+  </Canvas>
  </Grid>
  </Grid>
 </Window>

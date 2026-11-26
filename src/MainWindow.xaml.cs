@@ -6,6 +6,7 @@ using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Media;
+using System.Windows.Media.Animation;
 using Microsoft.Data.SqlClient;
 using Microsoft.Win32;
 
@@ -60,6 +61,8 @@ public partial class MainWindow : Window
     {
         LocationText.Text = $"Регион Windows — {ReadWindowsRegion()}\nЧасовой пояс — {TimeZoneInfo.Local.DisplayName}";
         LocationPanel.Visibility = Visibility.Visible;
+        var flight = (Storyboard)Welcome.Resources["SwarmFlight"];
+        flight.Begin(this);
     }
 
     private static string ReadWindowsRegion()
